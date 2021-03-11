@@ -2,11 +2,11 @@ package com.example.moneyapplication
 import com.google.gson.annotations.SerializedName
 import android.content.ClipData
 
-data class MoneyResponse (val item: List<MoneyItem> )
-data class MoneyItem(
+data class MoneyResponse (@SerializedName("Valute") val Valute: Map<String, MoneyItem>)
+data class  MoneyItem  (
 
     @SerializedName("ID")
-    var iD: String?,
+    var iD: String,
 
     @SerializedName("NumCode")
     var numCode: String,

@@ -24,7 +24,7 @@ class MoneyListViewModel(application: Application): AndroidViewModel(application
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        Log.e("TAG", it.item.toString())
+                       Log.d("TAG", it.Valute.map{it.value}.toString())
                     }, {
 
                     })
