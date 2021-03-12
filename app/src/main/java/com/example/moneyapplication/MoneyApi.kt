@@ -9,10 +9,6 @@ interface MoneyApi {
 
     @GET("./daily_json.js")
     //@Headers("Content-Type: application/json")
-fun getMoneyList():Single<MoneyResponse>
-
-/*@GET
-@Headers("Content-Type: application/json")
-fun getMoney (@Path())*/
+    fun getMoneyList(): Single<MoneyResponse>
 
 }

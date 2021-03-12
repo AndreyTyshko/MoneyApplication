@@ -3,14 +3,18 @@ package com.example.moneyapplication
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import io.reactivex.disposables.CompositeDisposable
-import com.example.moneyapplication.MoneyApi
+import androidx.lifecycle.MutableLiveData
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class MoneyListViewModel(application: Application): AndroidViewModel(application) {
+
+class MoneyListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val compositeDisposable = CompositeDisposable()
+
+    val state = MutableLiveData<Collection<MoneyItem>>()
 
 
     override fun onCleared() {
@@ -20,18 +24,27 @@ class MoneyListViewModel(application: Application): AndroidViewModel(application
 
     fun fetchMoneyList(moneyApi: MoneyApi?) {
         moneyApi?.let {
-            compositeDisposable.add(moneyApi.getMoneyList()
+            compositeDisposable.add(
+                moneyApi.getMoneyList()
+                    .map { it.items.values }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                       Log.d("TAG", it.Valute.map{it.value}.toString())
-                    }, {
-
-                    })
+                    .subscribe(
+                        ::logList,
+                        ::logError
+                    )
             )
 
         }
+    }
 
+    private fun logList(list: Collection<MoneyItem>) {
+        state.value = list
+    }
+
+    private fun logError(throwable: Throwable) {
 
     }
+
 }
+

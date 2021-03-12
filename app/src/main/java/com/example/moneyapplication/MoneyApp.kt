@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MoneyApp:Application() {
+class MoneyApp : Application() {
 
     lateinit var moneyApi: MoneyApi
 
@@ -16,13 +16,15 @@ class MoneyApp:Application() {
 
         configureRetrofit()
     }
-    
+
     private fun configureRetrofit() {
-        val httpLoggingInterceptor=HttpLoggingInterceptor()
+        val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
             .build()
+
         val retrofit = Retrofit.Builder()
             .baseUrl("https://www.cbr-xml-daily.ru")
             .client(okHttpClient)

@@ -1,9 +1,13 @@
 package com.example.moneyapplication
-import com.google.gson.annotations.SerializedName
-import android.content.ClipData
 
-data class MoneyResponse (@SerializedName("Valute") val Valute: Map<String, MoneyItem>)
-data class  MoneyItem  (
+import com.google.gson.annotations.SerializedName
+
+data class MoneyResponse(
+    @SerializedName("Valute")
+    val items: Map<String, MoneyItem>
+)
+
+data class MoneyItem(
 
     @SerializedName("ID")
     var iD: String,
@@ -25,5 +29,4 @@ data class  MoneyItem  (
 
     @SerializedName("Previous")
     var previous: Double,
-
 )
