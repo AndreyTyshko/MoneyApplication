@@ -15,7 +15,6 @@
         android:id="@+id/textNominalMoney"
         android:layout_width="200dp"
         android:layout_height="20dp"
-
         android:textSize="20sp" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -16,25 +16,26 @@ class MoneyListViewModel(application: Application) : AndroidViewModel(applicatio
 
     val state = MutableLiveData<Collection<MoneyItem>>()
 
-
     override fun onCleared() {
         compositeDisposable.dispose()
         super.onCleared()
     }
 
     fun fetchMoneyList(moneyApi: MoneyApi?) {
-        moneyApi?.let {
-            compositeDisposable.add(
-                moneyApi.getMoneyList()
-                    .map { it.items.values }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        ::logList,
-                        ::logError
-                    )
-            )
+        if (state.value == null) {
+            moneyApi?.let {
+                compositeDisposable.add(
+                    moneyApi.getMoneyList()
+                        .map { it.items.values }
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                            ::logList,
+                            ::logError
+                        )
+                )
 
+            }
         }
     }
 

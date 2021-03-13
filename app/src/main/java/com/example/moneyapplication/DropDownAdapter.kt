@@ -8,7 +8,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 
-class CustomDropDownAdapter(val context: Context, var dataSource: List<ModelAdapter>) : BaseAdapter() {
+class DropDownAdapter(val context: Context, var dataSource: List<ModelAdapter>) : BaseAdapter() {
 
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
@@ -24,10 +24,10 @@ class CustomDropDownAdapter(val context: Context, var dataSource: List<ModelAdap
             view = convertView
             vh = view.tag as ItemHolder
         }
-        vh.label.text = dataSource.get(position).name
+        vh.nameMoney.text = dataSource.get(position).name
 
         val id = context.resources.getIdentifier(dataSource.get(position).name, "drawable", context.packageName)
-        vh.img.setBackgroundResource(id)
+        vh.nominalMoney.setBackgroundResource(id)
 
         return view
     }
@@ -45,13 +45,14 @@ class CustomDropDownAdapter(val context: Context, var dataSource: List<ModelAdap
     }
 
     private class ItemHolder(row: View?) {
-        val label: TextView
-        val img: TextView
+        val nameMoney: TextView
+        val nominalMoney: TextView
 
         init {
-            label = row?.findViewById(R.id.textNameMoney) as TextView
-            img = row?.findViewById(R.id.textNominalMoney) as TextView
+            nameMoney = row?.findViewById(R.id.textNameMoney) as TextView
+            nominalMoney = row?.findViewById(R.id.textNominalMoney) as TextView
         }
     }
 
 }
+
