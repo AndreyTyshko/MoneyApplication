@@ -16,6 +16,8 @@ class MoneyListViewModel(application: Application) : AndroidViewModel(applicatio
 
     val state = MutableLiveData<Collection<MoneyItem>>()
 
+
+
     override fun onCleared() {
         compositeDisposable.dispose()
         super.onCleared()

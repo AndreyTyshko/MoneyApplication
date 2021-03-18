@@ -1,15 +1,26 @@
 package com.example.moneyapplication
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
-import android.widget.Spinner
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import java.lang.NumberFormatException
 
 
 class MoneyListFragment : Fragment(R.layout.fragment_money_list) {
-    var leftSpinner: Spinner? = null
+    var spinnerFrom: Spinner? = null
+    var spinnerTo: Spinner? = null
+    var fromTextView: TextView? = null
+    var toTextView: TextView? = null
+    var editText: EditText? = null
+    var tvResult: TextView? = null
+
+    var tv: TextView? = null
     private var adapter: CurrencySpinnerAdapter? = null
+    private var adapter2: CurrencySpinnerAdapter? = null
     private lateinit var moneyListViewModel: MoneyListViewModel
 
 
@@ -17,6 +28,7 @@ class MoneyListFragment : Fragment(R.layout.fragment_money_list) {
         super.onViewCreated(view, savedInstanceState)
 
         moneyListViewModel = ViewModelProviders.of(this).get(MoneyListViewModel::class.java)
+
         moneyListViewModel.fetchMoneyList((activity?.application as? MoneyApp)?.moneyApi)
         //val leftSpinner = view.findViewById<Spinner>(R.id.spinnerLeft)
 
@@ -26,39 +38,89 @@ class MoneyListFragment : Fragment(R.layout.fragment_money_list) {
     }
 
     private fun initUi() {
-        leftSpinner = view?.findViewById(R.id.spinnerLeft)
-        adapter = context?.let { CurrencySpinnerAdapter(it, R.layout.custom_spinner_item) }
+        spinnerFrom = view?.findViewById(R.id.spinnerFrom)
+        spinnerTo = view?.findViewById(R.id.spinnerTo)
+        fromTextView = view?.findViewById(R.id.tvFrom)
+        toTextView = view?.findViewById(R.id.tvTo)
+        editText = view?.findViewById(R.id.etTo)
+        tvResult = view?.findViewById(R.id.tvResult)
 
-        leftSpinner?.adapter = adapter
+        adapter = context?.let { CurrencySpinnerAdapter(it, R.layout.custom_spinner_item) }
+        adapter2 = context?.let { CurrencySpinnerAdapter(it, R.layout.custom_spinner_item) }
+
+        spinnerFrom?.adapter = adapter
+        spinnerTo?.adapter = adapter2
+
+        spinnerFrom?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val q = (spinnerFrom?.selectedItem as MoneyItem).value
+                fromTextView?.text = q.toString()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+        }
+        spinnerTo?.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val q2 = (spinnerTo?.selectedItem as MoneyItem).value
+                    toTextView?.text = q2.toString()
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+
+
+            }
+
+editText?.addTextChangedListener(textWatcher)
+    }
+
+
+    private val textWatcher = object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+          calcuiate(s)
+        }
+
+
+    }
+
+    private fun calcuiate(s: CharSequence?) {
+        try {
+            val from = toTextView?.text.toString().toDouble()
+            val to = fromTextView?.text.toString().toDouble()
+            val value = s.toString().toDouble()
+            val result=from/to*value
+            tvResult?.setText(result.toString())
+        } catch (e: NumberFormatException) {
+            e.stackTraceToString()
+        }
     }
 
     private fun observeViewModel() {
         moneyListViewModel.state.observe(this) { list ->
             adapter?.list = list.toList()
-
-
-            //val dropDownAdapter: ArrayAdapter<>
-
-
-//TODO записываешь список в адаптер рекуклера
-/**/
-            /*val dropDownAdapter = DropDownAdapter(this, android.R.layout.simple_spinner_item, )
-            leftSpinner?.adapter = DropDownAdapter*/
-
-            /*   val DropDownAdapter: ArrayAdapter<*> = ArrayAdapter<Any?>(
-                   this,
-                   android.R.layout.simple_spinner_item, arrayOf<State>( )
-               )
-*/
-            /* val dropDownAdapter = ArrayAdapter<MoneyItem>(
-                 this, R.layout.custom_spinner_item, moneyListViewModel.state
-             )
-             dropDownAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-             leftSpinner?.setAdapter(dropDownAdapter)*/
-
-            //leftSpinner?.adapter=ArrayAdapter(activity, R.layout.custom_spinner_item, list) as SpinnerAdapter
-            /*l list = arrayListOf<string>()
-                 val adapter = context?.let { ArrayAdapter(it,android.R.layout.simple_spinner_item, list) }*/
+            adapter2?.list = list.toList()
 
 
         }
