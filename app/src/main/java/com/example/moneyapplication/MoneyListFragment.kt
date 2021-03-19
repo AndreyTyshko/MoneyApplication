@@ -1,5 +1,6 @@
 package com.example.moneyapplication
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,7 +8,6 @@ import android.view.View
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import java.lang.NumberFormatException
 
 
 class MoneyListFragment : Fragment(R.layout.fragment_money_list) {
@@ -17,8 +17,25 @@ class MoneyListFragment : Fragment(R.layout.fragment_money_list) {
     var toTextView: TextView? = null
     var editText: EditText? = null
     var tvResult: TextView? = null
+    var nominalFrom: Int = 0
+    var nominalTo: Int = 0
 
     var tv: TextView? = null
+    var cnt = spinnerFrom
+
+    var pos: Int = 0
+    var pos2: Int = 0
+
+    private val COUNT_KEY = "COUNT_KEY"
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(COUNT_KEY, pos)
+        outState.putInt(COUNT_KEY, pos2)
+    }
+
+
     private var adapter: CurrencySpinnerAdapter? = null
     private var adapter2: CurrencySpinnerAdapter? = null
     private lateinit var moneyListViewModel: MoneyListViewModel
@@ -35,7 +52,11 @@ class MoneyListFragment : Fragment(R.layout.fragment_money_list) {
         initUi()
 
         observeViewModel()
+
+        pos = savedInstanceState?.getInt("COUNT_KEY") ?: 0
+        pos2 = savedInstanceState?.getInt("COUNT_KEY") ?: 0
     }
+
 
     private fun initUi() {
         spinnerFrom = view?.findViewById(R.id.spinnerFrom)
@@ -58,7 +79,12 @@ class MoneyListFragment : Fragment(R.layout.fragment_money_list) {
                 position: Int,
                 id: Long
             ) {
-                val q = (spinnerFrom?.selectedItem as MoneyItem).value
+                nominalFrom = (spinnerFrom?.selectedItem as MoneyItem).nominal
+                val q = ((spinnerFrom?.selectedItem as MoneyItem).value / nominalFrom).toFloat()
+                pos = spinnerFrom?.selectedItemPosition ?: 0
+
+
+
                 fromTextView?.text = q.toString()
             }
 
@@ -74,7 +100,10 @@ class MoneyListFragment : Fragment(R.layout.fragment_money_list) {
                     position: Int,
                     id: Long
                 ) {
-                    val q2 = (spinnerTo?.selectedItem as MoneyItem).value
+                    nominalTo = (spinnerFrom?.selectedItem as MoneyItem).nominal
+                    val q2 = ((spinnerTo?.selectedItem as MoneyItem).value / nominalTo).toFloat()
+                    pos2 = spinnerFrom?.selectedItemPosition ?: 0
+                    //val nominalToEnd=q2/nominalTo
                     toTextView?.text = q2.toString()
                 }
 
@@ -85,7 +114,7 @@ class MoneyListFragment : Fragment(R.layout.fragment_money_list) {
 
             }
 
-editText?.addTextChangedListener(textWatcher)
+        editText?.addTextChangedListener(textWatcher)
     }
 
 
@@ -99,7 +128,7 @@ editText?.addTextChangedListener(textWatcher)
         }
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-          calcuiate(s)
+            calcuiate(s)
         }
 
 
@@ -110,7 +139,7 @@ editText?.addTextChangedListener(textWatcher)
             val from = toTextView?.text.toString().toDouble()
             val to = fromTextView?.text.toString().toDouble()
             val value = s.toString().toDouble()
-            val result=from/to*value
+            val result = (from / to * value).toFloat()
             tvResult?.setText(result.toString())
         } catch (e: NumberFormatException) {
             e.stackTraceToString()
@@ -121,8 +150,24 @@ editText?.addTextChangedListener(textWatcher)
         moneyListViewModel.state.observe(this) { list ->
             adapter?.list = list.toList()
             adapter2?.list = list.toList()
-
+            spinnerFrom?.setSelection(pos)
 
         }
     }
+
+    /* override fun onSaveInstanceState(outState: Bundle) {
+         super.onSaveInstanceState(outState)
+         outState.putBundle(COUNT_KEY, outState)
+         Log.d(COUNT_KEY, "onSaveInstanceState")
+     }
+
+     fun onRestoreInstanceState(savedInstanceState: Bundle) {
+         onRestoreInstanceState(savedInstanceState)
+         cnt = savedInstanceState.getInt("COUNT_KEY")
+         //Log.d(LOG_TAG, "onRestoreInstanceState")
+     }*/
+
+
 }
+
+
